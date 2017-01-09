@@ -25,5 +25,10 @@ configurations {
 
 dependencies {
   compile("org.springframework.boot:spring-boot-starter-web")
+  compile("org.springframework.boot:spring-boot-starter-jdbc")
+  compile("mysql:mysql-connector-java:5.1.40")
+  compile("org.thymeleaf:thymeleaf-spring4")
+  compile("net.sourceforge.nekohtml:nekohtml:1.9.22")
+  compile("nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect")
   testCompile("org.springframework.boot:spring-boot-starter-test")
 }
