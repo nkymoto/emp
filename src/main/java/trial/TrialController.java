@@ -1,17 +1,21 @@
 package trial;
 
-import org.springframework.stereotype.Controller;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Controller
 @EnableAutoConfiguration
 public class TrialController
 {
-    @RequestMapping("/")
-    @ResponseBody
-    public String getReq() {
-        return "Good morning, Spring Boot サンプル";
+    @RequestMapping("/thymeleaf")
+    public ModelAndView thymeleaf() {
+        Map<String, String> model = new HashMap<String, String>();
+        model.put("message", "hello world");
+        return new ModelAndView("HelloController/thymeleaf", model);
     }
 }
