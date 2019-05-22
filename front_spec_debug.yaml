@@ -1,0 +1,2053 @@
+swagger: "2.0"
+info:
+  description: "DeCurretでは APIを提供しています。"
+  version: "1.0.0"
+  title: "API Documentation"
+  x-logo:
+    url: 'image/logo.svg'
+    altText: logo
+host: "35.190.227.105"
+basePath: "/v1"
+schemes:
+- "http"
+tags:
+- name: "HTTP API Public"
+  description: "APIキーによる認証が不要なAPIです。"
+- name: "HTTP API Private"
+  description: "APIキーによる認証が必要なAPIです。"
+paths:
+  /symbols:
+    get:
+      tags:
+      - "HTTP API Public"
+      summary: "銘柄照会"
+      description: 銘柄の設定情報を取得するAPI。
+      operationId: "getSymbolAll"
+      produces:
+      - "application/json"
+      - "application/problem+json"
+      parameters: []
+      responses:
+        200:
+          schema:
+            $ref: "#/definitions/SymbolOut"
+          description: "検索結果"
+        422:
+          description: "検索条件エラー"
+        500:
+          description: "検索業務エラー"
+      x-code-samples:
+        - lang: 'Node.js'
+          source: |
+            Node.jsのサンプル
+        - lang: 'Java'
+          source: |
+            Javaのサンプル
+        - lang: 'Ruby'
+          source: |
+            Rubyのサンプル
+        - lang: 'Python'
+          source: |
+            Pythonのサンプル
+  /currencies:
+    get:
+      tags:
+      - "HTTP API Public"
+      summary: "通貨情報照会"
+      description: 通貨情報を取得するAPIです。
+      operationId: "getCurrencyAll"
+      produces:
+      - "application/json"
+      - "application/problem+json"
+      parameters: []
+      responses:
+        200:
+          schema:
+            $ref: "#/definitions/CurrencyOut"
+          description: "検索結果"
+        422:
+          description: "検索条件エラー"
+        500:
+          description: "業務エラー"
+  /chartlogs/ticks/symbols/{symbol}:
+    get:
+      tags:
+      - "HTTP API Public"
+      summary: "TICK照会"
+      description: チャートログ(TICK)を取得するAPI。
+      operationId: "getTickLog"
+      produces:
+      - "application/json"
+      - "application/problem+json"
+      parameters:
+        - name: "symbol"
+          in: "path"
+          type: "string"
+          required: true
+          description: "銘柄"
+        - name: "channel"
+          in: "query"
+          type: "integer"
+          format: "int32"
+          required: true
+          description: "チャネル"
+        - name: "chart_type"
+          in: "query"
+          type: "integer"
+          format: "int32"
+          required: true
+          description: "1：Tick 固定"
+        - name: "making_type"
+          in: "query"
+          type: "integer"
+          format: "int32"
+          required: true
+          description: "7：MMASK\n8：MMBID\n9：ASK_BID\n"
+        - name: "max_count"
+          in: "query"
+          type: "integer"
+          format: "int32"
+          required: true
+          description: "最大取得本数(3000まで指定可能)"
+        - name: "cache_seq"
+          in: "query"
+          type: "string"
+          description: "シーケンスIDを指定した場合、それ以降のデータが取得できる。"
+      responses:
+        200:
+          schema:
+            $ref: "#/definitions/TickOut"
+          description: "検索結果"
+        422:
+          description: "検索条件エラー"
+        500:
+          description: "検索業務エラー"
+  /chartlogs/candles/symbols/{symbol}:
+    get:
+      tags:
+      - "HTTP API Public"
+      summary: "ローソク足チャート照会"
+      description: 指定した銘柄、本数、足種類のチャートログを取得するAPI。
+      operationId: "corpGetChartLog"
+      produces:
+      - "application/json"
+      - "application/problem+json"
+      parameters:
+        - name: "symbol"
+          in: "path"
+          type: "string"
+          required: true
+          description: "銘柄"
+        - name: "channel"
+          in: "query"
+          type: "integer"
+          format: "int32"
+          required: true
+          description: "チャネル"
+        - name: "chart_type"
+          in: "query"
+          type: "integer"
+          format: "int32"
+          required: true
+          description: "2：1分足\n3：5分足\n5：30分足\n6：時間足\n7：日足\n8：週足\n9：月足\n12：4時間足\n"
+        - name: "making_type"
+          in: "query"
+          type: "integer"
+          format: "int32"
+          required: true
+          description: "7：MMASK\n8：MMBID\n9：ASK_BID\n"
+        - name: "max_count"
+          in: "query"
+          type: "integer"
+          format: "int32"
+          required: true
+          description: "最大取得本数(3000まで指定可能)"
+        - name: "cache_date_time"
+          in: "query"
+          type: "string"
+          description: "キャッシュ保持時刻を指定した場合、それ以降のデータが取得できる。"
+      responses:
+        200:
+          schema:
+            $ref: "#/definitions/ChartLogOut"
+          description: "検索結果"
+        422:
+          description: "検索条件エラー"
+        500:
+          description: "検索業務エラー"
+  /prices/symbols:
+    get:
+      tags:
+      - "HTTP API Public"
+      summary: "全銘柄レート情報照会"
+      description: 全銘柄のレート情報と初期設定値を取得するAPI。
+      operationId: "corpGetInitPriceListAndSettings"
+      produces:
+      - "application/json"
+      - "application/problem+json"
+      parameters: []
+      responses:
+        200:
+          schema:
+            $ref: "#/definitions/PriceQuotation"
+          description: "検索結果"
+        422:
+          description: "検索条件エラー"
+        500:
+          description: "検索業務エラー"
+  /prices/symbols/{symbol}:
+    get:
+      tags:
+      - "HTTP API Public"
+      summary: "指定銘柄レート情報照会"
+      description: 指定した銘柄のレート情報を取得するAPI。
+      operationId: "corpGetSingleNowPrice"
+      produces:
+      - "application/json"
+      - "application/problem+json"
+      parameters:
+        - name: "symbol"
+          in: "path"
+          type: "string"
+          required: true
+          description: "銘柄コード"
+      responses:
+        200:
+          schema:
+            $ref: "#/definitions/NowPrice"
+          description: "検索結果"
+        422:
+          description: "検索条件エラー"
+        500:
+          description: "検索業務エラー"
+  /balances/currencies:
+    get:
+      tags:
+      - "・残高参照"
+      summary: "全通貨残高余力照会"
+      description: 口座の法定/仮想全通貨の残高情報を取得するAPIです。
+      operationId: "getAccountInfoForAllCurrency"
+      produces:
+      - "application/json"
+      - "application/problem+json"
+      parameters:
+        - name: "Api-Key"
+          in: "header"
+          type: "string"
+          required: true
+          description: "API管理WEBで発行したAPIキー"
+        - name: "Api-Sign"
+          in: "header"
+          type: "string"
+          required: true
+          description: "API発行時のシークレットキー等でHMAC署名した値"
+      responses:
+        200:
+          schema:
+            $ref: "#/definitions/account_balance"
+          description: "残高余力情報"
+        400:
+          description: "条件エラー"
+        403:
+          description: "業務エラー"
+  /balances/currencies/{currency_code}:
+    get:
+      tags:
+      - "・残高参照"
+      summary: "通貨別残高余力照会"
+      description: 口座の法定/仮想指定通貨の残高情報を取得するAPIです。
+      operationId: "getAccountInfo"
+      produces:
+      - "application/json"
+      - "application/problem+json"
+      parameters:
+        - name: "Api-Key"
+          in: "header"
+          type: "string"
+          required: true
+          description: "API管理WEBで発行したAPIキー"
+        - name: "Api-Sign"
+          in: "header"
+          type: "string"
+          required: true
+          description: "API発行時のシークレットキー等でHMAC署名した値"
+        - name: "currency_code"
+          in: "path"
+          type: "string"
+          required: true
+          description: "通貨種別"
+      responses:
+        200:
+          schema:
+            $ref: "#/definitions/account_balance"
+          description: "残高余力情報"
+        400:
+          description: "条件エラー"
+        403:
+          description: "業務エラー"
+  /cashflows:
+    get:
+      tags:
+      - "・残高参照"
+      summary: "通貨履歴照会"
+      description: 口座の法定通貨入金履歴一覧を取得するAPIです。
+      operationId: "searchCashFlowHistory"
+      produces:
+      - "application/json"
+      - "application/problem+json"
+      parameters:
+        - name: "Api-Key"
+          in: "header"
+          type: "string"
+          required: true
+          description: "API管理WEBで発行したAPIキー"
+        - name: "Api-Sign"
+          in: "header"
+          type: "string"
+          required: true
+          description: "API発行時のシークレットキー等でHMAC署名した値"
+        - name: "cash_flow_accept_date_from"
+          in: "query"
+          type: "string"
+          description: |+
+            検索条件：入金受付日時From
+            YYYY/MM/DD hh:mm:ss
+        - name: "cash_flow_accept_date_to"
+          in: "query"
+          type: "string"
+          description: |+
+            検索条件：入金受付日時To
+            YYYY/MM/DD hh:mm:ss
+        - name: "currency_type"
+          in: "query"
+          type: "integer"
+          format: "int32"
+          description: "検索条件：通貨種別"
+        - name: "cash_flow_type"
+          in: "query"
+          type: "string"
+          description: |+
+            検索条件：入出金区分
+            （カンマ区切りで複数指定可）
+            例) 入金、ペイジー入金、コンビニ入金選択の場合
+            cash_flow_type=21,29,43
+            
+            指定可能区分
+            2:強制入金/3:強制出金/4:出金/21:入金/29:ペイジー入金/38:出金返戻/39:入金組戻/40:送付/41:受取/43:コンビニ入金/45:バーチャル口座入金/47:現物売買出金
+        - name: "cash_flow_status"
+          in: "query"
+          type: "string"
+          description: |+
+            検索条件：入出金ステータス
+            （カンマ区切りで複数指定可）
+            例) 処理済、受取完了、送付完了選択の場合
+            cash_flow_status=4,13,15
+            
+            指定可能区分
+            1:受付済/2:処理中/4:処理済/5:取消済/  9:受取受付/10:使途確認待ち/11:返送待ち/12:返送済み/13:受取完了/14:受取失敗 /15:送付完了
+        - name: "cash_flow_id"
+          in: "query"
+          type: "string"
+          description: "検索条件：入出金ID"
+        - name: "rows"
+          in: "query"
+          type: "string"
+          default: "20"
+          description: "１ページに対する取得件数"
+        - name: "count"
+          in: "query"
+          type: "string"
+          default: "1"
+          description: "ページ番号"
+      responses:
+        200:
+          schema:
+            $ref: "#/definitions/cash_flows"
+          description: "検索結果"
+        400:
+          description: "条件エラー"
+        403:
+          description: "業務エラー"
+        404:
+          description: "検索結果0件"
+  /cashflows/banks/{cash_flow_id}:
+    get:
+      tags:
+      - "・残高参照"
+      summary: "出金先口座照会"
+      description: 出金時の出金先銀行口座を取得するAPIです。
+      operationId: "searchWithdrawalBank"
+      produces:
+      - "application/json"
+      - "application/problem+json"
+      parameters:
+        - name: "Api-Key"
+          in: "header"
+          type: "string"
+          required: true
+          description: "API管理WEBで発行したAPIキー"
+        - name: "Api-Sign"
+          in: "header"
+          type: "string"
+          required: true
+          description: "API発行時のシークレットキー等でHMAC署名した値"
+        - name: "cash_flow_id"
+          in: "path"
+          type: "string"
+          required: true
+          description: "検索条件：入出金番号"
+      responses:
+        200:
+          schema:
+            $ref: "#/definitions/withdrawal_bank"
+          description: "検索結果"
+        400:
+          description: "条件エラー"
+        403:
+          description: "業務エラー"
+        404:
+          description: "検索結果0件"
+  /addresses/recipients/currencies/{currency_code}:
+    get:
+      tags:
+      - "・残高参照"
+      summary: "受理アドレス照会"
+      description: 口座の仮想通貨毎の受理アドレスを取得するAPIです。
+      operationId: "getReceiveAddress"
+      produces:
+      - "application/json"
+      - "application/problem+json"
+      parameters:
+        - name: "currency_code"
+          in: "path"
+          type: "string"
+          required: true
+          description: "通貨種別"
+        - name: "Api-Key"
+          in: "header"
+          type: "string"
+          required: true
+          description: "API管理WEBで発行したAPIキー"
+        - name: "Api-Sign"
+          in: "header"
+          type: "string"
+          required: true
+          description: "API発行時のシークレットキー等でHMAC署名した値"
+        - name: "issue"
+          in: "query"
+          type: "boolean"
+          default: False
+          required: true
+          description: "true:未発行なら発行し返却。False:発行済みの場合のみ返却"
+      responses:
+        200:
+          schema:
+            $ref: "#/definitions/receive_address"
+          description: "リクエストされたアドレスがあった場合"
+        400:
+          description: "条件エラー"
+        403:
+          description: "業務エラー"
+        404:
+          description: "リクエストされたアドレスが無かった場合"
+  /orders:
+    post:
+      tags:
+      - "・取引"
+      summary: "新規注文"
+      description: 通常注文について発注審査を行い、発注する。
+      operationId: "executeNormalOrder"
+      consumes:
+      - "application/json"
+      - "application/problem+json"
+      produces:
+      - "application/json"
+      - "application/problem+json"
+      parameters:
+        - name: "input"
+          in: "body"
+          schema:
+            $ref: "#/definitions/EntrySingleOrderIn"
+          required: true
+          description: "注文の入力値"
+        - name: "Api-Key"
+          in: "header"
+          type: "string"
+          required: true
+          description: "API管理WEBで発行したAPIキー"
+        - name: "Api-Sign"
+          in: "header"
+          type: "string"
+          required: true
+          description: "API発行時のシークレットキー等でHMAC署名した値"
+        - name: "execute"
+          in: "query"
+          type: "boolean"
+          description: |+
+            false：発注審査のみ
+            true：発注審査、発注処理
+            パラメータが無い場合はデフォルトでtrue。
+      responses:
+        201:
+          schema:
+            $ref: "#/definitions/EntrySingleOrderOut"
+          description: "注文確認結果"
+        422:
+          description: "入力値の不正エラー"
+        500:
+          description: "業務エラー"
+    delete:
+      tags:
+      - "・取引"
+      summary: "指定注文取消"
+      description: |+
+        全注文取消を行うAPI。
+        全ての注文が取消できなかった場合はエラーが返却される。
+        一部の注文で取消できなかった場合は、
+        エラーになった件数を注文取消不可件数で返却し、それ以外は取消処理される。
+      operationId: "executeAllOrderDelete"
+      produces:
+      - "application/json"
+      - "application/problem+json"
+      parameters:
+        - name: "Api-Key"
+          in: "header"
+          type: "string"
+          required: true
+          description: "API管理WEBで発行したAPIキー"
+        - name: "Api-Sign"
+          in: "header"
+          type: "string"
+          required: true
+          description: "API発行時のシークレットキー等でHMAC署名した値"
+      responses:
+        202:
+          schema:
+            $ref: "#/definitions/OrderDeleteOut"
+          description: "削除結果"
+        422:
+          description: "入力値の不正エラー"
+        500:
+          description: "業務エラー"
+    get:
+      tags:
+      - "・取引"
+      summary: "注文一覧照会"
+      description: 注文に対してのクエリー検索を行う。
+      operationId: "getOrderInfomationByCondition"
+      produces:
+      - "application/json"
+      - "application/problem+json"
+      parameters:
+        - name: "Api-Key"
+          in: "header"
+          type: "string"
+          required: true
+          description: "API管理WEBで発行したAPIキー"
+        - name: "Api-Sign"
+          in: "header"
+          type: "string"
+          required: true
+          description: "API発行時のシークレットキー等でHMAC署名した値"
+        - name: "order_from_date"
+          in: "query"
+          type: "string"
+          description: |+
+            注文日時FROM (YYYY/MM/DD HH:MM:SS)
+            未指定：条件なし
+        - name: "order_to_date"
+          in: "query"
+          type: "string"
+          description: |+
+            注文日時TO (YYYY/MM/DD HH:MM:SS)
+            未指定：条件なし
+        - name: "exec_from_date"
+          in: "query"
+          type: "string"
+          description: |+
+            約定日時FROM (YYYY/MM/DD HH:MM:SS)
+            未指定：条件なし
+        - name: "exec_to_date"
+          in: "query"
+          type: "string"
+          description: |+
+            約定日時TO (YYYY/MM/DD HH:MM:SS)
+            未指定：条件なし
+        - name: "symbol"
+          in: "query"
+          type: "string"
+          description: |+
+            銘柄
+            未指定：条件なし
+        - name: "side"
+          in: "query"
+          type: "string"
+          description: |+
+            売買
+            未指定：条件なし
+            1：買
+            2：売
+        - name: "order_status"
+          in: "query"
+          type: "string"
+          description: |+
+            未指定：条件なし
+            1：有効注文
+            2：注文済
+            5：約定済
+            6：取消済
+            7：無効
+            8：約定取消済
+            15：失効
+        - name: "type"
+          in: "query"
+          type: "string"
+          description: |+
+            未指定：条件なし
+            1：成行
+            2：指値
+            3：逆指値
+        - name: "page_row"
+          in: "query"
+          type: "integer"
+          format: "int32"
+          description: "1ページ分の件数の指定。"
+        - name: "page_idx"
+          in: "query"
+          type: "integer"
+          format: "int32"
+          description: "ページ番号"
+        - name: "sort_name"
+          in: "query"
+          type: "string"
+          required: true
+          description: |+
+            ソート対象を指定する。
+            ※ソート名は別紙「ソート名」記載。
+        - name: "sort_order"
+          in: "query"
+          type: "string"
+          required: true
+          description: |+
+            ソートの昇順・降順を指定する。
+            ASC ：昇順
+            DESC ：降順
+      responses:
+        200:
+          schema:
+            $ref: "#/definitions/OrderSearchOut"
+          description: "検索結果"
+        422:
+          description: "検索条件エラー"
+        500:
+          description: "検索業務エラー"
+  /orders/{order_id}:
+    put:
+      tags:
+      - "・取引"
+      summary: "注文訂正"
+      description: |+
+        注文訂正を行うAPI。
+        訂正内容は、注文価格、トリガー価格、注文数量、有効期限、有効期限日のみ変更可能。
+        それ以外の項目の変更不可。
+      operationId: "correctOrder"
+      consumes:
+      - "application/json"
+      - "application/problem+json"
+      produces:
+      - "application/json"
+      - "application/problem+json"
+      parameters:
+        - name: "order_id"
+          in: "path"
+          type: "string"
+          required: true
+          description: "訂正対象の注文番号"
+        - name: "Api-Key"
+          in: "header"
+          type: "string"
+          required: true
+          description: "API管理WEBで発行したAPIキー"
+        - name: "Api-Sign"
+          in: "header"
+          type: "string"
+          required: true
+          description: "API発行時のシークレットキー等でHMAC署名した値"
+        - name: "execute"
+          in: "query"
+          type: "boolean"
+          description: |+
+            false：発注審査のみ。
+            True：発注審査、注文訂正処理。
+            パラメータが無い場合はデフォルトでtrue。
+        - name: "input"
+          in: "body"
+          schema:
+            $ref: "#/definitions/OrderCorrectIn"
+          required: true
+          description: "注文訂正の入力値"
+      responses:
+        202:
+          schema:
+            $ref: "#/definitions/OrderCorrectOut"
+          description: "注文訂正の結果"
+        422:
+          description: "入力値の不正エラー"
+        500:
+          description: "業務エラー"
+    delete:
+      tags:
+      - "・取引"
+      summary: "指定注文取消"
+      description: |+
+        注文取消を行うAPI。
+        取消できなかった場合はエラーが返却される。
+        一部の注文で取消できなかった場合は、
+        エラーになった件数を注文取消不可件数で返却し、それ以外は取消処理される。
+      operationId: "executeOrderDelete"
+      produces:
+      - "application/json"
+      - "application/problem+json"
+      parameters:
+        - name: "order_id"
+          in: "path"
+          type: "string"
+          required: true
+          description: "削除対象注文番号"
+        - name: "Api-Key"
+          in: "header"
+          type: "string"
+          required: true
+          description: "API管理WEBで発行したAPIキー"
+        - name: "Api-Sign"
+          in: "header"
+          type: "string"
+          required: true
+          description: "API発行時のシークレットキー等でHMAC署名した値"
+      responses:
+        202:
+          schema:
+            $ref: "#/definitions/OrderDeleteOut"
+          description: "削除結果"
+        422:
+          description: "入力値の不正エラー"
+        500:
+          description: "業務エラー"
+    get:
+      tags:
+      - "・取引"
+      summary: "注文詳細照会"
+      description: |+
+        指定した注文番号の、
+        最新の状態を含めた注文履歴を取得する。
+      operationId: "getSingleOrderDetailByCondition"
+      produces:
+      - "application/json"
+      - "application/problem+json"
+      parameters:
+        - name: "order_id"
+          in: "path"
+          type: "string"
+          required: true
+          description: "取得対象の注文"
+        - name: "Api-Key"
+          in: "header"
+          type: "string"
+          required: true
+          description: "API管理WEBで発行したAPIキー"
+        - name: "Api-Sign"
+          in: "header"
+          type: "string"
+          required: true
+          description: "API発行時のシークレットキー等でHMAC署名した値"
+        - name: "page_row"
+          in: "query"
+          type: "integer"
+          format: "int32"
+          description: "1ページ分の件数の指定"
+        - name: "page_idx"
+          in: "query"
+          type: "integer"
+          format: "int32"
+          description: "ページ番号"
+      responses:
+        200:
+          schema:
+            $ref: "#/definitions/OrderSearchDetail"
+          description: "検索結果"
+        422:
+          description: "検索条件エラー"
+        500:
+          description: "検索業務エラー"
+  /balances/symbols/{symbol}:
+    get:
+      tags:
+      - "・取引"
+      summary: "発注可能数量照会"
+      description: 発注可能数量および決済可能数量を取得するAPI。
+      operationId: "getPossibleAmount"
+      produces:
+      - "application/json"
+      - "application/problem+json"
+      parameters:
+        - name: "symbol"
+          in: "path"
+          type: "string"
+          required: true
+          description: "取得したい銘柄コードの指定"
+        - name: "Api-Key"
+          in: "header"
+          type: "string"
+          required: true
+          description: "API管理WEBで発行したAPIキー"
+        - name: "Api-Sign"
+          in: "header"
+          type: "string"
+          required: true
+          description: "API発行時のシークレットキー等でHMAC署名した値"
+      responses:
+        200:
+          schema:
+            $ref: "#/definitions/PossibleAmount"
+          description: "結果"
+        422:
+          description: "入力値エラー"
+        500:
+          description: "業務エラー"
+  /contracts:
+    get:
+      tags:
+      - "・取引"
+      summary: "約定一覧照会"
+      description: 約定に対してクエリー検索を行う。
+      operationId: "getContractInfomationByCondition"
+      produces:
+      - "application/json"
+      - "application/problem+json"
+      parameters:
+        - name: "Api-Key"
+          in: "header"
+          type: "string"
+          required: true
+          description: "API管理WEBで発行したAPIキー"
+        - name: "Api-Sign"
+          in: "header"
+          type: "string"
+          required: true
+          description: "API発行時のシークレットキー等でHMAC署名した値"
+        - name: "exec_from_datetime"
+          in: "query"
+          type: "string"
+          description: |+
+            約定日時FROM (YYYY/MM/DD HH:MM:SS)
+            未指定：条件なし
+        - name: "exec_to_datetime"
+          in: "query"
+          type: "string"
+          description: |+
+            約定日時TO (YYYY/MM/DD HH:MM:SS)
+            未指定：条件なし
+        - name: "symbol"
+          in: "query"
+          type: "string"
+          description: |+
+            銘柄
+            未指定：条件なし
+        - name: "currency"
+          in: "query"
+          type: "integer"
+          format: "int32"
+          description: |+
+            通貨
+            未指定：条件なし
+        - name: "side"
+          in: "query"
+          type: "integer"
+          format: "int32"
+          description: |+
+            売買
+            未指定：条件なし
+            1：買
+            2：売
+        - name: "page_row"
+          in: "query"
+          type: "integer"
+          format: "int32"
+          description: "1ページ分の件数の指定。"
+        - name: "page_idx"
+          in: "query"
+          type: "integer"
+          format: "int32"
+          description: "ページ番号"
+        - name: "sort_name"
+          in: "query"
+          type: "string"
+          required: true
+          description: |+
+            ソート対象を指定する。
+            ※ソート名は別紙「ソート名」記載。
+        - name: "sort_order"
+          in: "query"
+          type: "string"
+          required: true
+          description: |+
+            ソートの昇順・降順を指定する。
+            ASC ：昇順
+            DESC ：降順
+      responses:
+        200:
+          schema:
+            $ref: "#/definitions/ContractSearchOut"
+          description: "検索結果"
+        422:
+          description: "検索条件エラー"
+        500:
+          description: "検索業務エラー"
+definitions:
+  SymbolOut:
+    type: "object"
+    properties:
+      count:
+        type: "integer"
+        format: "int32"
+      symbols:
+        type: array
+        items:
+          $ref: "#/definitions/SymbolData"
+  SymbolData:
+    type: "object"
+    properties:
+      symbol:
+        type: "string"
+      symbol_name:
+        type: "string"
+      symbol_name_jpn:
+        type: "string"
+      base_currency:
+        type: "string"
+      currency:
+        type: "string"
+      decimal_effective_digit:
+        type: "string"
+      price_quotation:
+        type: "string"
+      yen_evaluate_code:
+        type: "string"
+      lot_amount:
+        type: "string"
+      order_max_lot:
+        type: "string"
+      symbol_sequence:
+        type: "integer"
+        format: "int32"
+  CurrencyOut:
+    type: "object"
+    properties:
+      currencies:
+        type: array
+        items:
+          $ref: "#/definitions/CurrencyData"
+  CurrencyData:
+    type: "object"
+    properties:
+      currency:
+        type: "string"
+        description: " 通貨種別 備考:"
+      currency_name:
+        type: "string"
+        description: " 通貨種別名称 備考:"
+      currency_sequence:
+        type: "integer"
+        format: "int32"
+        description: " 並び順 備考:"
+      decimal_effective_digit:
+        type: "string"
+        description: " 取引時小数部有効桁数 備考:取引で扱う際の小数点以下の有効桁数"
+      currency_decimal_effective_digit:
+        type: "string"
+        description: " 通貨小数部有効桁数 備考:通貨としての小数点以下の有効桁数"
+      execution_price_effective_digit:
+        type: "string"
+        description: " 約定金額算出時小数部有効桁数 備考:約定金額算出時の小数点以下の有効桁数"
+      yen_evaluation_symbol_code:
+        type: "string"
+        description: " 円評価銘柄コード 備考:"
+      in_cash_min_private:
+        type: "string"
+        description: " 入金数量下限(個人) 備考:"
+      in_cash_max_private:
+        type: "string"
+        description: " 入金数量上限(個人) 備考:"
+      in_cash_commission_private:
+        type: "string"
+        description: " 入金手数料(個人) 備考:"
+      out_cash_min_private:
+        type: "string"
+        description: " 出金数量下限(個人) 備考:"
+      out_cash_max_private:
+        type: "string"
+        description: " 出金数量上限(個人) 備考:"
+      out_cash_commission_private:
+        type: "string"
+        description: " 出金手数料(個人) 備考:"
+      trade_qty_max_private:
+        type: "string"
+        description: " 取引数量上限(個人) 備考:"
+      in_cash_min_corporate:
+        type: "string"
+        description: " 入金数量下限(法人) 備考:"
+      in_cash_max_corporate:
+        type: "string"
+        description: " 入金数量上限(法人) 備考:"
+      in_cash_commission_corporate:
+        type: "string"
+        description: " 入金手数料(法人) 備考:"
+      out_cash_min_corporate:
+        type: "string"
+        description: " 出金数量下限(法人) 備考:"
+      out_cash_max_corporate:
+        type: "string"
+        description: " 出金数量上限(法人) 備考:"
+      out_cash_commission_corporate:
+        type: "string"
+        description: " 出金手数料(法人) 備考:"
+      trade_qty_max_corporate:
+        type: "string"
+        description: " 取引数量上限(法人) 備考:"
+  TickOut:
+    type: "object"
+    properties:
+      ticks:
+        type: array
+        items:
+          $ref: "#/definitions/TickLog"
+      symbol:
+        type: "string"
+        description: "銘柄   書式(,min=, max=) 備考:"
+      chart_type:
+        type: "integer"
+        format: "int32"
+        description: "チャートタイプ   書式(,min=, max=) 備考:"
+      making_type:
+        type: "integer"
+        format: "int32"
+        description: "作成区分   書式(,min=, max=) 備考:"
+      count:
+        type: "integer"
+        format: "int32"
+        description: "データ件数   書式(,min=, max=) 備考:"
+  TickLog:
+    type: "object"
+    properties:
+      seq:
+        type: "string"
+        description: "シーケンス番号   書式(,min=, max=) 備考:"
+      chart_date_time:
+        type: "string"
+        description: "配信日時   書式(yyyy/MM/dd HH:mm:ss.SSS,min=, max=) 備考:"
+      ask_rate:
+        type: "string"
+        description: "Askレート   書式(,min=, max=12,20) 備考:"
+      bid_rate:
+        type: "string"
+        description: "Bidレート   書式(,min=, max=12,20) 備考:"
+  ChartLogOut:
+    type: "object"
+    properties:
+      candles:
+        type: array
+        items:
+          $ref: "#/definitions/ChartLog"
+      symbol:
+        type: "string"
+        description: "銘柄   書式(,min=, max=) 備考:"
+      chart_type:
+        type: "integer"
+        format: "int32"
+        description: "チャートタイプ   書式(,min=, max=) 備考:"
+      making_type:
+        type: "integer"
+        format: "int32"
+        description: "作成区分   書式(,min=, max=) 備考:"
+      count:
+        type: "integer"
+        format: "int32"
+        description: "データ件数   書式(,min=, max=) 備考:"
+  ChartLog:
+    type: "object"
+    properties:
+      chart_date_time:
+        type: "string"
+        description: "配信日時   書式(yyyy/MM/dd HH:mm:ss.SSS,min=, max=) 備考:"
+      fixed_flg:
+        type: "string"
+        description: "確定足フラグ   書式(,min=, max=) 備考:0：未確定(直近足)/1：確定"
+      ask_open_price:
+        type: "string"
+        description: "始値(ASK)   書式(,min=, max=12,20) 備考:"
+      ask_high_price:
+        type: "string"
+        description: "高値(ASK)   書式(,min=, max=12,20) 備考:"
+      ask_low_price:
+        type: "string"
+        description: "安値(ASK)   書式(,min=, max=12,20) 備考:"
+      ask_close_price:
+        type: "string"
+        description: "終値(ASK)   書式(,min=, max=12,20) 備考:"
+      bid_open_price:
+        type: "string"
+        description: "始値(BID)   書式(,min=, max=12,20) 備考:"
+      bid_high_price:
+        type: "string"
+        description: "高値(BID)   書式(,min=, max=12,20) 備考:"
+      bid_low_price:
+        type: "string"
+        description: "安値(BID)   書式(,min=, max=12,20) 備考:"
+      bid_close_price:
+        type: "string"
+        description: "終値(BID)   書式(,min=, max=12,20) 備考:"
+  PriceQuotation:
+    type: "object"
+    properties:
+      quotation:
+        type: array
+        items:
+          $ref: "#/definitions/Quote"
+  Quote:
+    type: "object"
+    properties:
+      symbol:
+        type: "string"
+        description: " 銘柄コード 書式(半角数字,min=, max=) 備考:"
+      current_datetime:
+        type: "string"
+        description: " 現在時刻 書式(YYYY/MM/DD HH:MM:SS.FF3,min=, max=) 備考:"
+      bid_rate:
+        type: "string"
+        description: " 買気配 書式(半角数字,min=, max=12,20) 備考:"
+      ask_rate:
+        type: "string"
+        description: " 売気配 書式(半角数字,min=, max=12,20) 備考:"
+      change_ratio:
+        type: "string"
+        description: " 前日比 書式(半角数字,min=, max=12,20) 備考:"
+      open_price:
+        type: "string"
+        description: " 始値 書式(半角数字,min=, max=12,20) 備考:"
+      high_price:
+        type: "string"
+        description: " 高値 書式(半角数字,min=, max=12,20) 備考:"
+      low_price:
+        type: "string"
+        description: " 安値 書式(半角数字,min=, max=12,20) 備考:"
+      pre_close_price:
+        type: "string"
+        description: " 前日清算価格 書式(半角数字,min=, max=12,20) 備考:前日終値"
+      display_sequence:
+        type: "integer"
+        format: "int32"
+        description: " 表示順番 書式(半角数字,min=, max=) 備考:プライスパネルなどの標準的な並び順"
+      scale:
+        type: "integer"
+        format: "int32"
+        description: " 有効桁数 書式(半角数字,min=, max=) 備考:レートの小数部有効桁数"
+  NowPrice:
+    type: "object"
+    properties:
+      symbol:
+        type: "string"
+        description: " 銘柄コード 書式(半角数字,min=, max=) 備考:"
+      current_datetime:
+        type: "string"
+        description: " 現在時刻 書式(YYYY/MM/DD HH:MM:SS.FF3,min=, max=) 備考:"
+      bid_rate:
+        type: "string"
+        description: " 買気配 書式(半角数字,min=, max=12,20) 備考:"
+      ask_rate:
+        type: "string"
+        description: " 売気配 書式(半角数字,min=, max=12,20) 備考:"
+      change_ratio:
+        type: "string"
+        description: " 前日比 書式(半角数字,min=, max=12,20) 備考:"
+      open_price:
+        type: "string"
+        description: " 始値 書式(半角数字,min=, max=12,20) 備考:"
+      high_price:
+        type: "string"
+        description: " 高値 書式(半角数字,min=, max=12,20) 備考:"
+      low_price:
+        type: "string"
+        description: " 安値 書式(半角数字,min=, max=12,20) 備考:"
+      pre_close_price:
+        type: "string"
+        description: " 前日清算価格 書式(半角数字,min=, max=12,20) 備考:"
+  account_balance:
+    type: "object"
+    properties:
+      balances:
+        type: array
+        items:
+          $ref: "#/definitions/balances"
+  balances:
+    type: "object"
+    properties:
+      currency_type:
+        type: "integer"
+        format: "int32"
+        description: "通貨種別   書式(半角数字,min=, max=) 備考:1:日本円、2:bitcoin, 3:bcash, 4:ripple, 5:litecoin"
+      cash_amount:
+        type: "string"
+        description: "現金残高   書式(半角数字,min=, max=33(整数部12桁、小数部20桁)) 備考:単位：通貨毎"
+      yen_cash_amount:
+        type: "string"
+        description: "円換算現金残高   書式(半角数字,min=, max=33(整数部12桁、小数部20桁)) 備考:単位：円"
+      receiving_scheduled_amount:
+        type: "string"
+        description: "受渡予定額   書式(半角数字,min=, max=33(整数部12桁、小数部20桁)) 備考:単位：通貨毎"
+      payment_scheduled_amount:
+        type: "string"
+        description: "出金依頼額   書式(半角数字,min=, max=33(整数部12桁、小数部20桁)) 備考:単位：円"
+      yen_receiving_scheduled_amount:
+        type: "string"
+        description: "円換算受渡予定額   書式(半角数字,min=, max=33(整数部12桁、小数部20桁)) 備考:単位：通貨毎"
+      yen_conversion_no_price:
+        type: "string"
+        description: "円評価価格   書式(半角数字,min=, max=33(整数部12桁、小数部20桁)) 備考:単位：円"
+      received_margin:
+        type: "string"
+        description: |+
+          受入証拠金   書式(半角数字,min=, max=33(整数部12桁、小数部20桁)) 備考:単位：通貨毎
+          通貨余力
+      payment_possible_amount:
+        type: "string"
+        description: "出金可能額   書式(半角数字,min=, max=33(整数部12桁、小数部20桁)) 備考:単位：通貨毎"
+      avg_exec_price:
+        type: "string"
+        description: "平均約定価格   書式(半角数字,min=, max=33(整数部12桁、小数部20桁)) 備考:単位：通貨毎"
+      restriction_amount:
+        type: "string"
+        description: "拘束中金額   書式(半角数字,min=, max=33(整数部12桁、小数部20桁)) 備考:単位：通貨毎"
+      currency_capacity:
+        type: "string"
+        description: "通貨余力   書式(半角数字,min=, max=33(整数部12桁、小数部20桁)) 備考:現金残高－拘束中金額"
+      last_cash_amount:
+        type: "string"
+        description: "前日残高   書式(半角数字,min=, max=33(整数部12桁、小数部20桁)) 備考:前日締め時点の残高"
+  cash_flows:
+    type: "object"
+    properties:
+      cash_flow_histories:
+        type: array
+        items:
+          $ref: "#/definitions/cash_flow_histories"
+      paging_info:
+        $ref: "#/definitions/paging_info"
+  cash_flow_histories:
+    type: "object"
+    properties:
+      cash_flow_id:
+        type: "string"
+        description: "入出金ＩＤ   書式(半角英数,min=, max=16) 備考:"
+      currency_type:
+        type: "integer"
+        format: "int32"
+        description: "通貨種別   書式(半角数字,min=, max=2) 備考:1:日本円, 2:bitcoin, 3:bcash, 4:ripple, 5:litecoin"
+      cash_flow_type:
+        type: "integer"
+        format: "int32"
+        description: "入出金区分   書式(半角数字,min=, max=2) 備考:2:強制入金/3:強制出金/4:出金/21:現物売買入金/29:ペイジー入金/38:出金返戻/39:入金組戻/40:送付/41:受取/43:コンビニ入金/45:バーチャル口座入金/47:現物売買出金"
+      inout_side_type:
+        type: "integer"
+        format: "int32"
+        description: |+
+          内部外部区分   書式(半角数字,min=, max=1) 備考:通貨種別が仮想通貨の場合に設定
+          1:内部/2:外部
+      cash_flow_amount:
+        type: "string"
+        description: "入出金金額   書式(半角数字,min=, max=33(整数部12桁、小数部20桁)) 備考:"
+      cash_flow_commission:
+        type: "string"
+        description: "入出金手数料   書式(半角数字,min=, max=33(整数部12桁、小数部20桁)) 備考:"
+      cash_flow_status:
+        type: "integer"
+        format: "int32"
+        description: |+
+          入出金状態   書式(半角数字,min=, max=2) 備考:法定通貨の場合
+          1:受付済/2:処理中/4:処理済/5:取消済
+          仮想通貨の場合
+          9:受取受付/10:使途確認待ち/11:返送待ち/12:返送済み/13:受取完了/14:受取失敗 /15:送付完了
+      cash_flow_accept_date_time:
+        type: "string"
+        description: "発生日   書式(YYYY/MM/DD HH:MM:SS,min=, max=23) 備考:ユーザからの処理を受け付けた日時"
+      cash_amount:
+        type: "string"
+        description: "現金残高   書式(半角数字,min=, max=33(整数部12桁、小数部20桁)) 備考:処理完了時点の入出金が反映された現金残高"
+      purpose:
+        type: "string"
+        description: "目的   書式(半角数字,min=, max=2) 備考:1:預入金/2:手数料調整金/3:出金/7:その他"
+      address:
+        type: "string"
+        description: "アドレス   書式(半角英数,min=, max=100) 備考:"
+      dest_tag:
+        type: "integer"
+        format: "int64"
+        description: "宛先タグ   書式(半角数字,min=, max=10) 備考:XRPのみ。宛先タグが設定されていれば出力"
+      tx_id:
+        type: "string"
+        description: "トランザクションID   書式(半角英数,min=, max=120) 備考:"
+      tx_status:
+        type: "integer"
+        format: "int32"
+        description: "トランザクション状態   書式(半角数字,min=, max=2) 備考:0:未署名トランザクション生成済, 1:署名済, 2:ネットワーク配信済, 3:ブロック格納済, 4:取引完了, 5:長時間の未取込状態, 6:２重支払いによる未処理状態(同一UTXOが他のTxで使用され、ブロック格納済), 7:失敗として確定済(取引完了のUTXOを持つTX)"
+      previous_close_price:
+        type: "string"
+        description: |+
+          前日終値   書式(半角数字,min=, max=33(整数部12桁、小数部20桁)) 備考:ユーザからの処理を受け付けた時点の前日終値
+          入出金区分が送付・受取の時のみ設定
+      cancel_flag:
+        type: "integer"
+        format: "int32"
+        description: "取消可能フラグ   書式(半角数字,min=, max=1) 備考:0:可能、1:不可能"
+  paging_info:
+    type: "object"
+    properties:
+      count:
+        type: "integer"
+        format: "int32"
+        description: "該当ページの取得結果件数   書式(半角数字,min=, max=5) 備考:"
+      total_count:
+        type: "integer"
+        format: "int32"
+        description: "検索結果総件数   書式(半角数字,min=, max=3) 備考:"
+      page_index:
+        type: "integer"
+        format: "int32"
+        description: "ページ番号   書式(半角数字,min=, max=3) 備考:"
+      page_row_size:
+        type: "integer"
+        format: "int32"
+        description: "１ページあたりの表示件数   書式(半角数字,min=, max=3) 備考:"
+      total_page_count:
+        type: "integer"
+        format: "int32"
+        description: "検索結果総ページ数   書式(半角数字,min=, max=3) 備考:"
+  withdrawal_bank:
+    type: "object"
+    properties:
+      name:
+        type: "string"
+        description: "依頼人名   書式(全角,min=, max=40) 備考:全角カタカナ"
+      bank_code:
+        type: "integer"
+        format: "int32"
+        description: "金融機関コード   書式(半角数字,min=, max=4) 備考:"
+      bank_name:
+        type: "string"
+        description: "金融機関名   書式(全角,min=, max=15) 備考:"
+      branch_code:
+        type: "integer"
+        format: "int32"
+        description: "店舗コード   書式(半角数字,min=, max=3) 備考:"
+      branch_name:
+        type: "string"
+        description: "店舗名   書式(全角,min=, max=15) 備考:"
+      bank_account_type:
+        type: "integer"
+        format: "int32"
+        description: "出金先口座種目   書式(半角数字,min=, max=1) 備考:1:普通預金口座/2:当座預金口座/3:貯蓄預金口座"
+      bank_account_num:
+        type: "string"
+        description: "出金先口座番号   書式(半角数字,min=, max=7) 備考:"
+  receive_address:
+    type: "object"
+    properties:
+      address:
+        type: "string"
+        description: "受理アドレス   書式(半角英数,min=, max=100) 備考:"
+      xrp_dest_tag:
+        type: "integer"
+        format: "int64"
+        description: "宛先タグ(Ripple用)   書式(半角数字,min=, max=10) 備考:通貨種別がRippleでない場合はnull"
+  EntrySingleOrderIn:
+    type: "object"
+    required:
+    - "market"
+    - "white_label"
+    - "input_order"
+    properties:
+      market:
+        type: "integer"
+        format: "int32"
+        enum:
+        - "2"
+        description: "市場区分コード    書式(半角数字,min=, max=) 備考:"
+      white_label:
+        type: "integer"
+        format: "int32"
+        enum:
+        - "101"
+        description: "ホワイトラベルコード   書式(半角数字,min=, max=4) 備考:"
+      input_order:
+        $ref: "#/definitions/InputOrder"
+  InputOrder:
+    type: "object"
+    required:
+    - "channel"
+    - "symbol"
+    - "order_type"
+    - "side"
+    - "time_in_force"
+    - "order_specification"
+    properties:
+      channel:
+        type: "string"
+        description: "チャネル   書式(,min=, max=) 備考:"
+      completion_user_id:
+        type: "string"
+        description: "処理ユーザID   書式(半角英数,min=, max=8) 備考:代行業務を行うOwlユーザーID"
+      symbol:
+        type: "string"
+        description: "銘柄コード   書式(半角,min=, max=9) 備考:"
+      order_qty:
+        type: "string"
+        description: |+
+          注文数量   書式(半角数字,min=, max=12,20) 備考:注文タイプが1：成行の場合は、注文指定区分が1：数量指定であれば必須。
+          Execute=falseの場合かつ金額指定であれば、現在ﾚｰﾄで計算された数量が返却される。
+      order_type:
+        type: "string"
+        enum:
+        - "1"
+        - "2"
+        - "3"
+        description: |+
+          注文タイプ   書式(半角数字,min=1, max=1) 備考:1：成行
+          2：指値
+          3：逆指値
+      side:
+        type: "string"
+        enum:
+        - "1"
+        - "2"
+        description: |+
+          売買   書式(半角数字,min=1, max=1) 備考:1：買
+          2：売
+      time_in_force:
+        type: "string"
+        enum:
+        - "1"
+        - "3"
+        - "8"
+        description: |+
+          有効期限   書式(半角数字,min=1, max=1) 備考:1：当日　※成行の場合は固定
+          3：無期限
+          8：日付指定
+      expire_date:
+        type: "string"
+        description: "有効期限日   書式(YYYYMMDD,min=, max=8) 備考:有効期限が8：日付指定の場合必須"
+      price:
+        type: "string"
+        description: "注文価格   書式(半角数字,min=, max=12,20) 備考:指値注文時のみ"
+      trigger_price:
+        type: "string"
+        description: "トリガー価格   書式(半角数字,min=, max=12,20) 備考:逆指値注文時のみ"
+      order_specification:
+        type: "string"
+        enum:
+        - "1"
+        - "2"
+        description: |+
+          注文指定区分   書式(半角数字,min=1, max=1) 備考:1：数量指定　※成行以外の場合は固定
+          2：金額指定
+      order_specified_amount:
+        type: "string"
+        description: "注文指定金額   書式(半角数字,min=, max=12,20) 備考:注文タイプが1：成行、かつ、注文指定区分が2：金額指定の場合必須"
+      client_tick_id:
+        type: "string"
+        description: "  書式(半角英数,min=, max=) 備考:成行の時のみ発注時点のtickIdを渡す。"
+      client_tick_price:
+        type: "string"
+        description: "  書式(半角数字,min=, max=12,20) 備考:成行の時のみ発注時点のtickレートを渡す。"
+  EntrySingleOrderOut:
+    type: "object"
+    required:
+    - "input_order"
+    properties:
+      market:
+        type: "integer"
+        format: "int32"
+        description: "市場区分コード    書式(半角数字,min=, max=) 備考:"
+      white_label:
+        type: "integer"
+        format: "int32"
+        description: "ホワイトラベルコード   書式(半角数字,min=, max=4) 備考:"
+      soft_limit:
+        type: "string"
+        enum:
+        - "0"
+        - "1"
+        description: |+
+          ソフトリミットフラグ   書式(半角数字,min=, max=1) 備考:数量の閾値による警告フラグ。発注は可能。
+          0：ソフトリミット以内
+          1：ソフトリミット外
+      immediately_exec:
+        type: "string"
+        enum:
+        - "0"
+        description: "即約定価格フラグ   書式(半角数字,min=, max=1) 備考:"
+      order_id:
+        type: "string"
+        description: "注文番号   書式(半角英数,min=, max=16) 備考:0：フラグOFF固定"
+      input_order:
+        $ref: "#/definitions/InputOrder"
+  OrderCorrectIn:
+    type: "object"
+    required:
+    - "market"
+    - "white_label"
+    - "channel"
+    - "order_correct_first"
+    properties:
+      market:
+        type: "integer"
+        format: "int32"
+        enum:
+        - "2"
+        description: "市場区分コード    書式(半角数字,min=, max=) 備考:"
+      white_label:
+        type: "integer"
+        format: "int32"
+        enum:
+        - "101"
+        description: "ホワイトラベルコード   書式(半角数字,min=, max=4) 備考:"
+      channel:
+        type: "string"
+        description: "チャネル   書式(半角数字,min=, max=) 備考:"
+      comp_user_id:
+        type: "string"
+        description: "更新ユーザID   書式(半角英数,min=, max=10) 備考:代行業務を行うOwlユーザーID"
+      order_correct_first:
+        $ref: "#/definitions/Correct"
+  Correct:
+    type: "object"
+    required:
+    - "order_id"
+    - "order_expire_type"
+    - "order_specification"
+    properties:
+      order_id:
+        type: "string"
+        description: "注文番号   書式(半角英数,min=, max=16) 備考:"
+      order_method:
+        type: "string"
+        description: "注文方法   書式(,min=, max=) 備考:1固定"
+      symbol:
+        type: "string"
+        description: "通貨ペア   書式(,min=, max=9) 備考:"
+      order_qty:
+        type: "string"
+        description: |+
+          注文数量   書式(半角数字,min=, max=12,20) 備考:注文タイプが1：成行、かつ、注文指定区分が2：金額指定の場合、自動計算して設定
+          Execute=falseの場合かつ金額指定であれば、現在ﾚｰﾄで計算された数量が返却される。
+      order_type:
+        type: "string"
+        description: "注文タイプ   書式(,min=, max=) 備考:"
+      order_price:
+        type: "string"
+        description: "注文価格   書式(半角数字,min=, max=12,20) 備考:"
+      trigger_price:
+        type: "string"
+        description: "トリガー価格   書式(半角数字,min=, max=12,20) 備考:"
+      side:
+        type: "string"
+        description: "売買区分   書式(半角数字,min=1, max=1) 備考:"
+      order_expire_type:
+        type: "string"
+        description: |+
+          有効期限   書式(半角数字,min=1, max=1) 備考:1：当日　※成行の場合は固定
+          3：無期限
+          8：日付指定
+      order_status:
+        type: "string"
+        description: "状態   書式(,min=, max=) 備考:"
+      expire_date:
+        type: "string"
+        description: "有効期限日   書式(YYYYMMDD,min=8, max=8) 備考:"
+      order_specification:
+        type: "string"
+        description: "注文指定区分   書式(,min=, max=) 備考:"
+      order_specified_amount:
+        type: "string"
+        description: "注文指定金額   書式(半角数字,min=, max=12,20) 備考:注文タイプが1：成行、かつ、注文指定区分が2：金額指定の場合必須"
+      client_tick_id:
+        type: "string"
+        description: " クライアントTickＩＤ 書式(半角英数+記号,min=, max=12,20) 備考:成行の時のみ発注時点のtickIdを渡す。"
+      client_tick_price:
+        type: "string"
+        description: " クライアントTick価格 書式(半角英数+記号,min=, max=12,20) 備考:成行の時のみ発注時点のtickレートを渡す。"
+  OrderCorrectOut:
+    type: "object"
+    required:
+    - "order_correct_first"
+    properties:
+      market:
+        type: "integer"
+        format: "int32"
+        description: "市場区分コード    書式(,min=, max=) 備考:"
+      white_label:
+        type: "integer"
+        format: "int32"
+        description: "ホワイトラベルコード   書式(,min=, max=4) 備考:"
+      immediately_exec:
+        type: "string"
+        enum:
+        - "0"
+        description: "即約定価格フラグ   書式(半角数字,min=, max=1) 備考:0：フラグOFF固定"
+      soft_limit:
+        type: "string"
+        enum:
+        - "0"
+        - "1"
+        description: |+
+          ソフトリミットフラグ   書式(半角数字,min=, max=1) 備考:0：ソフトリミット以内
+          1：ソフトリミット外
+      order_correct_first:
+        $ref: "#/definitions/Correct"
+  OrderDeleteOut:
+    type: "object"
+    properties:
+      market:
+        type: "integer"
+        format: "int32"
+        description: " 市場区分コード  書式(半角数字,min=, max=1) 備考:"
+      white_label:
+        type: "integer"
+        format: "int32"
+        description: " ホワイトラベルコード 書式(半角数字,min=, max=4) 備考:"
+      fail_count:
+        type: "integer"
+        format: "int32"
+        description: " 注文取消不可件数 書式(半角数字,min=, max=12) 備考:"
+  PossibleAmount:
+    type: "object"
+    properties:
+      symbol_name:
+        type: "string"
+        description: " 通貨名 書式(半角英数+記号,min=, max=7) 備考:BYC/JPYなど"
+      buy_amount:
+        type: "string"
+        description: " 発注可能数量（買） 書式(半角数字,min=, max=12,20) 備考:小数点以下あり"
+      sell_amount:
+        type: "string"
+        description: " 発注可能数量（売） 書式(半角数字,min=, max=12,20) 備考:小数点以下あり"
+  OrderSearchOut:
+    type: "object"
+    properties:
+      market:
+        type: "integer"
+        format: "int32"
+        enum:
+        - "2"
+        description: "市場区分コード   書式(半角数字,min=, max=1) 備考:※ヘッダから取得した値を返却。本項目は必須では無い為、削除予定。クライアントでの使用は非推奨"
+      white_label:
+        type: "integer"
+        format: "int32"
+        enum:
+        - "101"
+        description: "ホワイトラベルコード   書式(半角数字,min=, max=4) 備考:※ヘッダから取得した値を返却。本項目は必須では無い為、削除予定。クライアントでの使用は非推奨"
+      orders:
+        type: array
+        items:
+          $ref: "#/definitions/Order"
+      page:
+        $ref: "#/definitions/Paging"
+      condition:
+        $ref: "#/definitions/Condition"
+  Order:
+    type: "object"
+    properties:
+      order_id:
+        type: "string"
+        description: "注文番号   書式(半角数字,min=, max=16) 備考:"
+      received_datetime:
+        type: "string"
+        description: "注文日時   書式(YYYY/MM/DD HH:MM:SS,min=, max=19) 備考:"
+      exec_datetime:
+        type: "string"
+        description: "約定日時   書式(YYYY/MM/DD HH:MM:SS,min=, max=19) 備考:"
+      symbol:
+        type: "string"
+        description: "銘柄   書式(,min=, max=) 備考:"
+      side:
+        type: "string"
+        description: "売買   書式(,min=, max=) 備考:"
+      order_status:
+        type: "string"
+        description: "状態   書式(,min=, max=) 備考:"
+      order_amount:
+        type: "string"
+        description: "注文数量   書式(半角英数+記号,min=, max=12,20) 備考:"
+      exec_amount:
+        type: "string"
+        description: "約定数量   書式(半角英数+記号,min=, max=12,20) 備考:"
+      lapse_amount:
+        type: "string"
+        description: "失効数量   書式(半角英数+記号,min=, max=12,20) 備考:"
+      order_method:
+        type: "string"
+        description: "注文方法   書式(,min=, max=) 備考:"
+      order_type:
+        type: "string"
+        description: "注文タイプ1   書式(,min=, max=) 備考:"
+      order_price:
+        type: "string"
+        description: "注文価格1   書式(半角英数+記号,min=, max=12,20) 備考:"
+      exec_price:
+        type: "string"
+        description: "約定価格   書式(半角英数+記号,min=, max=12,20) 備考:"
+      order_expire_type:
+        type: "string"
+        description: "有効期限   書式(,min=, max=) 備考:"
+      order_expire_date:
+        type: "string"
+        description: "有効期限日   書式(YYYYMMDD,min=, max=8) 備考:"
+      channel:
+        type: "string"
+        description: "チャネル   書式(半角数字,min=, max=2) 備考:"
+      correctable_flag:
+        type: "boolean"
+        description: "訂正可能フラグ   書式(,min=, max=-) 備考:"
+      cancelable_flag:
+        type: "boolean"
+        description: "取消可能フラグ   書式(,min=, max=-) 備考:"
+      cancel_datetime:
+        type: "string"
+        description: "取消日時   書式(YYYY/MM/DD HH:MM:SS,min=, max=19) 備考:"
+      correct_datetime:
+        type: "string"
+        description: "訂正日時   書式(YYYY/MM/DD HH:MM:SS,min=, max=19) 備考:"
+      correct_detail_flag:
+        type: "boolean"
+        description: "変更履歴フラグ   書式(,min=, max=) 備考:"
+      order_specification:
+        type: "string"
+        description: "注文指定区分   書式(,min=, max=-) 備考:"
+      order_specified_amount:
+        type: "string"
+        description: "注文指定金額   書式(,min=, max=12,20) 備考:"
+  OrderDetail:
+    type: "object"
+    properties:
+      order_id:
+        type: "string"
+        description: "注文番号   書式(半角数字,min=, max=16) 備考:"
+      correction_history_number:
+        type: "string"
+        description: "訂正履歴番号   書式(半角数字,min=1, max=) 備考:"
+      received_datetime:
+        type: "string"
+        description: "注文日時   書式(YYYY/MM/DD HH:MM:SS,min=, max=19) 備考:"
+      exec_datetime:
+        type: "string"
+        description: "約定日時   書式(YYYY/MM/DD HH:MM:SS,min=, max=19) 備考:"
+      symbol:
+        type: "string"
+        description: "銘柄   書式(,min=, max=) 備考:"
+      side:
+        type: "string"
+        description: "売買   書式(,min=, max=) 備考:"
+      order_status:
+        type: "string"
+        description: "状態   書式(,min=, max=) 備考:"
+      order_amount:
+        type: "string"
+        description: "注文数量   書式(半角英数+記号,min=, max=12,20) 備考:"
+      exec_amount:
+        type: "string"
+        description: "約定数量   書式(半角英数+記号,min=, max=12,20) 備考:"
+      lapse_amount:
+        type: "string"
+        description: "失効数量   書式(半角英数+記号,min=, max=12,20) 備考:"
+      order_method:
+        type: "string"
+        description: "注文方法   書式(,min=, max=) 備考:"
+      order_type:
+        type: "string"
+        description: "注文タイプ1   書式(,min=, max=) 備考:"
+      order_price:
+        type: "string"
+        description: "注文価格1   書式(半角英数+記号,min=, max=12,20) 備考:"
+      exec_price:
+        type: "string"
+        description: "約定価格   書式(半角英数+記号,min=, max=12,20) 備考:"
+      order_expire_type:
+        type: "string"
+        description: "有効期限   書式(,min=, max=) 備考:"
+      order_expire_date:
+        type: "string"
+        description: "有効期限日   書式(YYYYMMDD,min=, max=8) 備考:"
+      channel:
+        type: "string"
+        description: "チャネル   書式(半角数字,min=, max=2) 備考:"
+      correctable_flag:
+        type: "boolean"
+        description: "訂正可能フラグ   書式(,min=, max=-) 備考:"
+      cancelable_flag:
+        type: "boolean"
+        description: "取消可能フラグ   書式(,min=, max=-) 備考:"
+      cancel_datetime:
+        type: "string"
+        description: "取消日時   書式(YYYY/MM/DD HH:MM:SS,min=, max=19) 備考:"
+      correct_datetime:
+        type: "string"
+        description: "訂正日時   書式(YYYY/MM/DD HH:MM:SS,min=, max=19) 備考:"
+      correct_detail_flag:
+        type: "boolean"
+        description: "変更履歴フラグ   書式(,min=, max=) 備考:"
+      order_specification:
+        type: "string"
+        description: "注文指定区分   書式(,min=, max=-) 備考:"
+      order_specified_amount:
+        type: "string"
+        description: "注文指定金額   書式(,min=, max=12,20) 備考:"
+  Paging:
+    type: "object"
+    properties:
+      count:
+        type: "integer"
+        format: "int32"
+        description: "該当ページの取得結果件数   書式(,min=, max=) 備考:検索条件に一致したレコードのうち、該当ページに表示する件数"
+      total:
+        type: "integer"
+        format: "int32"
+        description: "取得結果(総)件数   書式(,min=, max=) 備考:検索条件に一致したレコードの全件数"
+      page_idx:
+        type: "integer"
+        format: "int32"
+        description: "現在のページ番号   書式(,min=, max=) 備考:入力値と同じ"
+      page_row:
+        type: "integer"
+        format: "int32"
+        description: "１ページあたりの表示件数   書式(,min=, max=) 備考:入力値と同じ"
+      total_page:
+        type: "integer"
+        format: "int32"
+        description: "取得結果(総)ページ数   書式(,min=, max=) 備考:検索条件に一致したレコード数÷１ページあたりの表示件数で割り振られる総ページ数"
+      current_from:
+        type: "integer"
+        format: "int32"
+        description: |+
+          取得結果xx～   書式(,min=, max=) 備考:該当ページ内先頭行のIndex。
+          totalCount=25、pageRowSize=10、pageIndex=2の場合は、currentRowFrom=11となる。
+          pageIndex=3であれば、currentRowFrom=21となる。
+      current_to:
+        type: "integer"
+        format: "int32"
+        description: |+
+          取得結果～xx   書式(,min=, max=) 備考:該当ページ内最終行のIndex。
+          totalCount=25、pageRowSize=10、pageIndex=2の場合は、currentRowTo=20となる。
+          pageIndex=3であれば、currentRowTo=25となる。
+  Condition:
+    type: "object"
+    properties:
+      order_from_date:
+        type: "string"
+        description: "   書式(YYYYMMDD,min=, max=) 備考:※入力値をそのまま返却"
+      order_to_date:
+        type: "string"
+        description: "   書式(YYYYMMDD,min=, max=) 備考:※入力値をそのまま返却"
+      exec_from_date:
+        type: "string"
+        description: "   書式(YYYYMMDD,min=, max=) 備考:※入力値をそのまま返却"
+      exec_to_date:
+        type: "string"
+        description: "   書式(YYYYMMDD,min=, max=) 備考:※入力値をそのまま返却"
+      symbol:
+        type: "string"
+        description: "   書式(半角数字,min=, max=) 備考:※入力値をそのまま返却"
+      side:
+        type: "string"
+        description: "   書式(半角数字,min=, max=) 備考:※入力値をそのまま返却"
+      order_status:
+        type: "string"
+        description: "   書式(半角数字,min=, max=) 備考:※入力値をそのまま返却"
+      type:
+        type: "string"
+        description: "   書式(半角数字,min=, max=) 備考:※入力値をそのまま返却"
+  OrderSearchRelation:
+    type: "object"
+    properties:
+      correctable:
+        type: "boolean"
+        enum:
+        - "True"
+        - "False"
+      cancelable:
+        type: "boolean"
+        enum:
+        - "True"
+        - "False"
+  OrderSearchCsv:
+    type: "object"
+    properties:
+      market:
+        type: "integer"
+        format: "int32"
+        enum:
+        - "2"
+        description: "市場区分コード   書式(半角数字,min=, max=1) 備考:※ヘッダから取得した値を返却。本項目は必須では無い為、削除予定。クライアントでの使用は非推奨"
+      white_label:
+        type: "integer"
+        format: "int32"
+        enum:
+        - "101"
+        description: "ホワイトラベルコード   書式(半角数字,min=, max=4) 備考:※ヘッダから取得した値を返却。本項目は必須では無い為、削除予定。クライアントでの使用は非推奨"
+      condition:
+        $ref: "#/definitions/Condition"
+      csv:
+        type: "string"
+        description: "CSV   書式(半角英数+記号,min=, max=) 備考:csvフォーマットの注文データをbase64変換したもの"
+  OrderSearchDetail:
+    type: "object"
+    properties:
+      market:
+        type: "integer"
+        format: "int32"
+        enum:
+        - "2"
+        description: "市場区分コード   書式(半角数字,min=, max=1) 備考:※ヘッダから取得した値を返却。本項目は必須では無い為、削除予定。クライアントでの使用は非推奨"
+      white_label:
+        type: "integer"
+        format: "int32"
+        enum:
+        - "101"
+        description: "ホワイトラベルコード   書式(半角数字,min=, max=4) 備考:※ヘッダから取得した値を返却。本項目は必須では無い為、削除予定。クライアントでの使用は非推奨"
+      orders:
+        type: array
+        items:
+          $ref: "#/definitions/OrderDetail"
+      page:
+        $ref: "#/definitions/Paging"
+      order_id:
+        type: "string"
+        description: "注文ID   書式(,min=, max=) 備考:"
+  ContractSearchOut:
+    type: "object"
+    properties:
+      market:
+        type: "integer"
+        format: "int32"
+        enum:
+        - "2"
+      white_label:
+        type: "integer"
+        format: "int32"
+        enum:
+        - "101"
+      contracts:
+        type: array
+        items:
+          $ref: "#/definitions/Contract"
+      page:
+        $ref: "#/definitions/Paging"
+      condition:
+        $ref: "#/definitions/ContractCondition"
+  Contract:
+    type: "object"
+    properties:
+      exec_id:
+        type: "string"
+        description: " 約定番号 備考:"
+      order_id:
+        type: "string"
+        description: " 注文番号 備考:"
+      exec_datetime:
+        type: "string"
+        description: " 約定日時 書式(YYYY/MM/DD HH:MM:SS,min=19, max=) 備考:"
+      exec_cancel_datetime:
+        type: "string"
+        description: " 約定取消日時 書式(YYYY/MM/DD HH:MM:SS,min=19, max=) 備考:"
+      order_datetime:
+        type: "string"
+        description: " 注文日時 書式(YYYY/MM/DD HH:MM:SS,min=19, max=) 備考:"
+      market:
+        type: "string"
+        description: " 市場区分コード  備考:"
+      symbol:
+        type: "string"
+        description: " 銘柄コード 備考:"
+      currency:
+        type: "string"
+        description: " 通貨種別 備考:"
+      side:
+        type: "string"
+        description: " 売買 備考:"
+      exec_status:
+        type: "string"
+        description: " 状態 備考:"
+      exec_qty:
+        type: "string"
+        description: " 約定数量 備考:"
+      exec_price:
+        type: "string"
+        description: " 約定価格 備考:"
+      profit_loss:
+        type: "string"
+        description: " 売買損益 備考:"
+      order_sub_id:
+        type: "integer"
+        format: "int32"
+        description: " 注文Sub番号(注文方法) 備考:"
+      order_type:
+        type: "integer"
+        format: "int32"
+        description: " 注文タイプ 備考:"
+      rate:
+        type: "string"
+        description: " 注文価格 備考:"
+      yen_convert_rate:
+        type: "string"
+        description: " 円換算レート 備考:"
+      channel:
+        type: "integer"
+        format: "int32"
+        description: " チャネル 備考:"
+      exec_amount:
+        type: "string"
+        description: " 約定金額 備考:"
+  ContractCondition:
+    type: "object"
+    properties:
+      exec_from_datetime:
+        type: "string"
+        description: " 約定日時from 書式(YYYY/MM/DD HH:MM:SS,min=, max=) 備考:"
+      exec_to_datetime:
+        type: "string"
+        description: " 約定日時to 書式(YYYY/MM/DD HH:MM:SS,min=, max=) 備考:"
+      symbol:
+        type: "string"
+        description: " 銘柄コード 書式(半角数字,min=, max=) 備考:"
+      currency:
+        type: "string"
+        description: " 通貨 書式(半角数字,min=, max=) 備考:"
+      side:
+        type: "string"
+        description: " 売買 書式(半角数字,min=, max=) 備考:"
+  ContractSearchCsv:
+    type: "object"
+    properties:
+      market:
+        type: "integer"
+        format: "int32"
+        enum:
+        - "2"
+      white_label:
+        type: "integer"
+        format: "int32"
+        enum:
+        - "101"
+      csv:
+        type: "string"
+      condition:
+        $ref: "#/definitions/ContractCondition"
+
+
